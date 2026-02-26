@@ -1,0 +1,7 @@
+﻿services:
+  sensoringestion.presentation:
+    image: sensoringestion.presentation
+    build:
+      context: .
+      dockerfile: SensorIngestion.Presentation/Dockerfile
+

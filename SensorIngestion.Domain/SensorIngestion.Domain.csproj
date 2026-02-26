@@ -7,10 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Abstractions\Repositories\" />
-      <Folder Include="Abstractions\Services\" />
-      <Folder Include="Entities\" />
-      <Folder Include="Mapping\" />
+      <ProjectReference Include="..\NightWatch.Contracts\NightWatch.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="16.0.0" />
     </ItemGroup>
 
 </Project>
