@@ -17,6 +17,23 @@
       timeout: 5s
       retries: 5
   
+  nightwatch-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: nightwatch-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: nightwatch
+      RABBITMQ_DEFAULT_PASS: secret
+    ports:
+      - "5672:5672"     # AMQP порт — для сервисов
+      - "15672:15672"   # Management UI — веб-панель
+    networks:
+      - nightwatch-network
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
   sensoringestion.presentation:
     image: sensoringestion.presentation
     build:
@@ -27,10 +44,15 @@
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__Psql=Host=nightwatch-db;Port=5432;Database=SensorIngestion;Username=postgres;Password=12341234
+      - RabbitMQ__HostName=nightwatch-rabbitmq
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=12341234
     ports:
       - "5001:80"
     depends_on:
       nightwatch-db:
+        condition: service_healthy
+      nightwatch-rabbitmq:
         condition: service_healthy
     networks:
       - nightwatch-network
