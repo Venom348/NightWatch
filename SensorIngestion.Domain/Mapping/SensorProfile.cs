@@ -14,5 +14,7 @@ public class SensorProfile : Profile
     {
         CreateMap<Sensor, SensorDescriptionResponse>();
         CreateMap<SensorDescriptionResponse, Sensor>();
+        CreateMap<Sensor, SensorStatusResponse>();
+        CreateMap<SensorStatusResponse, Sensor>();
     }
 }
