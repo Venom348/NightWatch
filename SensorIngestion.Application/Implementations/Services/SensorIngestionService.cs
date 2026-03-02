@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NightWatch.Contracts.Common.Enums;
+using NightWatch.Contracts.Events;
 using NightWatch.Contracts.Requests.SensorIngestion;
 using NightWatch.Contracts.Responses.SensorIngestion;
+using SensorIngestion.Application.Abstractions;
 using SensorIngestion.Application.Exceptions;
 using SensorIngestion.Domain.Abstractions.Repositories;
 using SensorIngestion.Domain.Abstractions.Services;
@@ -16,12 +18,14 @@ public class SensorIngestionService : ISensorIngestionService
     private readonly IBaseRepository<Sensor> _sensorRepository;
     private readonly IBaseRepository<SensorReading> _sensorReadingRepository;
     private readonly IMapper _mapper;
+    private readonly ISensorReadingPublisher _publisher;
 
-    public SensorIngestionService(IBaseRepository<Sensor> sensorRepository, IBaseRepository<SensorReading> sensorReadingRepository, IMapper mapper)
+    public SensorIngestionService(IBaseRepository<Sensor> sensorRepository, IBaseRepository<SensorReading> sensorReadingRepository, IMapper mapper, ISensorReadingPublisher publisher)
     {
         _sensorRepository = sensorRepository;
         _sensorReadingRepository = sensorReadingRepository;
-        _mapper = mapper;   
+        _mapper = mapper;
+        _publisher = publisher;
     }
 
     public async Task<List<SensorDescriptionResponse>> GetAllSensors(int page = 0, int limit = 20)
@@ -98,6 +102,17 @@ public class SensorIngestionService : ISensorIngestionService
             Payload =  request.Payload,
             Location =  request.Location,
             Timestamp =  DateTime.UtcNow
+        });
+
+        // Публикация события в RabbitMQ
+        await _publisher.PublishAsync(new SensorReadingReceivedEvent
+        {
+            ReadingId = result.Id,
+            SensorId = result.SensorId,
+            SensorType = result.Type,
+            Location = result.Location,
+            Payload = result.Payload,
+            Timestamp = DateTime.UtcNow
         });
         
         // Возвращает данные показания датчика
