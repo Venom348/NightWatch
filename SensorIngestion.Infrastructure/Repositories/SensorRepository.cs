@@ -4,7 +4,7 @@ using SensorIngestion.Domain.Entities;
 
 namespace SensorIngestion.Infrastructure.Repositories;
 
-/// <inheritdoc cref="IBaseRepository{Sensor}">
+/// <inheritdoc cref="IBaseRepository{Sensor}" />
 public class SensorRepository : IBaseRepository<Sensor>
 {
     private readonly ApplicationContext _dbContext;

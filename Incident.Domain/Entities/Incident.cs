@@ -24,6 +24,11 @@ public class Incident : Entity
     public IncidentStatus Status { get; set; }
     
     /// <summary>
+    ///     Тип датчика для поиска правила классификации
+    /// </summary>
+    public SensorType SensorType { get; set; }
+    
+    /// <summary>
     ///     Местоположение
     /// </summary>
     public string Location { get; set; }
